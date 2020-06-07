@@ -8,7 +8,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
+
+import javax.xml.XMLConstants;
+import javax.xml.namespace.QName;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -27,7 +31,6 @@ import org.kie.dmn.model.api.InputData;
 import org.kie.dmn.model.v1_3.TInformationItem;
 import org.kie.dmn.model.v1_3.TDefinitions;
 import org.kie.dmn.model.v1_3.TInputData;
-import org.kie.internal.marshalling.MarshallerFactory;
 
 public class ExcelParser implements DecisionTableParser {
 
@@ -77,11 +80,25 @@ public class ExcelParser implements DecisionTableParser {
         Map<String, DTHeaderInfo> headerInfos = generateDTHeaderInfo(overview);
         headerInfos.entrySet().forEach(System.out::println);
         Definitions definitions = new TDefinitions();
+        setDefaultNSContext(definitions);
         definitions.setName("xls2dmn");
+        String namespace = "xls2dmn_"+UUID.randomUUID();
+        definitions.setNamespace(namespace);
+        definitions.getNsContext().put(XMLConstants.DEFAULT_NS_PREFIX, namespace);
+        definitions.setExporter("kie-dmn-xls2dmn");
         appendInputData(definitions, headerInfos);
         DMNMarshaller dmnMarshaller = DMNMarshallerFactory.newDefaultMarshaller();
         String xml = dmnMarshaller.marshal(definitions);
         System.out.println(xml);
+    }
+
+    private void setDefaultNSContext(Definitions definitions) {
+        Map<String, String> nsContext = definitions.getNsContext();
+        nsContext.put("feel", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_FEEL);
+        nsContext.put("dmn", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DMN);
+        nsContext.put("dmndi", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DMNDI);
+        nsContext.put("di", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DI);
+        nsContext.put("dc", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DC);
     }
 
     private void appendInputData(Definitions definitions, Map<String, DTHeaderInfo> headerInfos) {

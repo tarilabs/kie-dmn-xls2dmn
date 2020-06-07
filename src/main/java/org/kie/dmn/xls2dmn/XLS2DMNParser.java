@@ -25,10 +25,16 @@ import org.drools.template.parser.DecisionTableParseException;
 import org.kie.dmn.api.marshalling.DMNMarshaller;
 import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
+import org.kie.dmn.model.api.DMNElementReference;
+import org.kie.dmn.model.api.Decision;
 import org.kie.dmn.model.api.Definitions;
 import org.kie.dmn.model.api.InformationItem;
+import org.kie.dmn.model.api.InformationRequirement;
 import org.kie.dmn.model.api.InputData;
 import org.kie.dmn.model.v1_3.TInformationItem;
+import org.kie.dmn.model.v1_3.TInformationRequirement;
+import org.kie.dmn.model.v1_3.TDMNElementReference;
+import org.kie.dmn.model.v1_3.TDecision;
 import org.kie.dmn.model.v1_3.TDefinitions;
 import org.kie.dmn.model.v1_3.TInputData;
 
@@ -82,14 +88,42 @@ public class XLS2DMNParser implements DecisionTableParser {
         Definitions definitions = new TDefinitions();
         setDefaultNSContext(definitions);
         definitions.setName("xls2dmn");
-        String namespace = "xls2dmn_"+UUID.randomUUID();
+        String namespace = "xls2dmn_" + UUID.randomUUID();
         definitions.setNamespace(namespace);
         definitions.getNsContext().put(XMLConstants.DEFAULT_NS_PREFIX, namespace);
         definitions.setExporter("kie-dmn-xls2dmn");
         appendInputData(definitions, headerInfos);
+        appendDecisionDT(definitions, headerInfos);
         DMNMarshaller dmnMarshaller = DMNMarshallerFactory.newDefaultMarshaller();
         String xml = dmnMarshaller.marshal(definitions);
         System.out.println(xml);
+    }
+
+    private void appendDecisionDT(Definitions definitions, Map<String, DTHeaderInfo> headerInfos) {
+        for (DTHeaderInfo hi : headerInfos.values()) {
+            Decision decision = new TDecision();
+            decision.setName(hi.getSheetName());
+            decision.setId("d_" + CodegenStringUtil.escapeIdentifier(hi.getSheetName()));
+            InformationItem variable = new TInformationItem();
+            variable.setName(hi.getSheetName());
+            variable.setId("dvar_" + CodegenStringUtil.escapeIdentifier(hi.getSheetName()));
+            decision.setVariable(variable);
+            for (String ri : hi.getRequiredInput()) {
+                InformationRequirement ir = new TInformationRequirement();
+                DMNElementReference er = new TDMNElementReference();
+                er.setHref("#id_"+CodegenStringUtil.escapeIdentifier(ri));
+                ir.setRequiredInput(er);
+                decision.getInformationRequirement().add(ir);
+            }
+            for (String ri : hi.getRequiredDecision()) {
+                InformationRequirement ir = new TInformationRequirement();
+                DMNElementReference er = new TDMNElementReference();
+                er.setHref("#d_"+CodegenStringUtil.escapeIdentifier(ri));
+                ir.setRequiredInput(er);
+                decision.getInformationRequirement().add(ir);
+            }
+            definitions.getDrgElement().add(decision);
+        }
     }
 
     private void setDefaultNSContext(Definitions definitions) {

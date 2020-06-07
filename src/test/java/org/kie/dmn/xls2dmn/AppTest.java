@@ -1,14 +1,11 @@
 package org.kie.dmn.xls2dmn;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Arrays;
-import java.util.Scanner;
 
-import org.drools.compiler.rule.builder.dialect.java.parser.JavaParser.parExpression_return;
 import org.junit.Test;
 import org.kie.dmn.api.core.DMNContext;
 import org.kie.dmn.api.core.DMNModel;
@@ -20,9 +17,6 @@ import org.kie.dmn.feel.util.Either;
 import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 public class AppTest {
 

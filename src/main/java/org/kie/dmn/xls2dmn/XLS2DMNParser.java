@@ -32,7 +32,7 @@ import org.kie.dmn.model.v1_3.TInformationItem;
 import org.kie.dmn.model.v1_3.TDefinitions;
 import org.kie.dmn.model.v1_3.TInputData;
 
-public class ExcelParser implements DecisionTableParser {
+public class XLS2DMNParser implements DecisionTableParser {
 
     @Override
     public void parseFile(InputStream inStream) {

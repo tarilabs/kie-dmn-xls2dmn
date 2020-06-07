@@ -12,6 +12,6 @@ public class AppTest {
 
     @Test
     public void shouldAnswerWithTrue() {
-        new ExcelParser().parseFile(this.getClass().getResourceAsStream("/Loan_approvals.xlsx"));
+        new XLS2DMNParser().parseFile(this.getClass().getResourceAsStream("/Loan_approvals.xlsx"));
     }
 }

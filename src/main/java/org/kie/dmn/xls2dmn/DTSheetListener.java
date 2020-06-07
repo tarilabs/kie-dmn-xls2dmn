@@ -11,8 +11,12 @@ import org.kie.dmn.model.api.UnaryTests;
 import org.kie.dmn.model.v1_3.TDecisionRule;
 import org.kie.dmn.model.v1_3.TLiteralExpression;
 import org.kie.dmn.model.v1_3.TUnaryTests;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DTSheetListener implements DataListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DTSheetListener.class);
 
     private final DecisionTable dt;
     private final DTHeaderInfo headerInfo;
@@ -65,22 +69,29 @@ public class DTSheetListener implements DataListener {
             return;
         }
         if (value == null || value.isEmpty()) {
-            System.out.println("ignoring row, col:"+row+" "+column+" "+value);
+            LOG.trace("ignoring row {}, col {} having value {}", row, column, value);
             return;
         }
         if (column < headerInfo.gethIndex()) {
             valueCheck(row, column, value);
             UnaryTests ut = new TUnaryTests();
-            ut.setText(value);
+            ut.setText(eValue(value));
             curRule.getInputEntry().add(ut);
         } else if (column == headerInfo.gethIndex()) {
             valueCheck(row, column, value);
             LiteralExpression le = new TLiteralExpression();
-            le.setText(value);
+            le.setText(eValue(value));
             curRule.getOutputEntry().add(le);
         } else {
-            System.out.println("ignoring row, col:"+row+" "+column+" "+value);
+            LOG.trace("ignoring row {}, col {} having value {}", row, column, value);
         }
+    }
+
+    private String eValue(String value) {
+        if (value.startsWith("“") &&value.endsWith("”")) {
+            return "\""+value.substring(1, value.length()-1)+"\"";
+        }
+        return value;
     }
 
     private void valueCheck(int row, int column, String value) {

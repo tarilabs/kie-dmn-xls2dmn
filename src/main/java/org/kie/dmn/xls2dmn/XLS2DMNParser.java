@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -51,8 +52,17 @@ import org.kie.dmn.model.v1_3.TDefinitions;
 import org.kie.dmn.model.v1_3.TInputData;
 import org.kie.dmn.model.v1_3.TLiteralExpression;
 import org.kie.dmn.model.v1_3.TOutputClause;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XLS2DMNParser implements DecisionTableParser {
+
+    private static final Logger LOG = LoggerFactory.getLogger(XLS2DMNParser.class);
+    private final File outFile;
+
+    public XLS2DMNParser(File outFile) {
+        this.outFile = outFile;
+    }
 
     @Override
     public void parseFile(InputStream inStream) {
@@ -119,7 +129,13 @@ public class XLS2DMNParser implements DecisionTableParser {
         new ExcelParser(sheetListeners).parseWorkbook(workbook);
         DMNMarshaller dmnMarshaller = DMNMarshallerFactory.newDefaultMarshaller();
         String xml = dmnMarshaller.marshal(definitions);
-        System.out.println(xml);
+        try {
+            Files.write(outFile.toPath(), xml.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        LOG.debug("output XML:\n{}",xml);
     }
 
     private void appendDecisionDT(Definitions definitions, Map<String, DTHeaderInfo> headerInfos) {
@@ -142,13 +158,13 @@ public class XLS2DMNParser implements DecisionTableParser {
                 InformationRequirement ir = new TInformationRequirement();
                 DMNElementReference er = new TDMNElementReference();
                 er.setHref("#d_" + CodegenStringUtil.escapeIdentifier(ri));
-                ir.setRequiredInput(er);
+                ir.setRequiredDecision(er);
                 decision.getInformationRequirement().add(ir);
             }
             DecisionTable dt = new TDecisionTable();
             dt.setOutputLabel(hi.getSheetName());
             dt.setId("ddt_" + CodegenStringUtil.escapeIdentifier(hi.getSheetName()));
-            dt.setHitPolicy(HitPolicy.UNIQUE);
+            dt.setHitPolicy(HitPolicy.ANY);
             for (String ri : hi.getRequiredInput()) {
                 InputClause ic = new TInputClause();
                 ic.setLabel(ri);

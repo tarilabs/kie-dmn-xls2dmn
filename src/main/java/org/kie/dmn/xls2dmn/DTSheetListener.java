@@ -8,9 +8,9 @@ import org.kie.dmn.model.api.DecisionRule;
 import org.kie.dmn.model.api.DecisionTable;
 import org.kie.dmn.model.api.LiteralExpression;
 import org.kie.dmn.model.api.UnaryTests;
-import org.kie.dmn.model.v1_3.TDecisionRule;
-import org.kie.dmn.model.v1_3.TLiteralExpression;
-import org.kie.dmn.model.v1_3.TUnaryTests;
+import org.kie.dmn.model.v1_2.TDecisionRule;
+import org.kie.dmn.model.v1_2.TLiteralExpression;
+import org.kie.dmn.model.v1_2.TUnaryTests;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

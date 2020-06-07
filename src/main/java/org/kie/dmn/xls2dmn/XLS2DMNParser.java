@@ -42,16 +42,17 @@ import org.kie.dmn.model.api.InputClause;
 import org.kie.dmn.model.api.InputData;
 import org.kie.dmn.model.api.LiteralExpression;
 import org.kie.dmn.model.api.OutputClause;
-import org.kie.dmn.model.v1_3.TInformationItem;
-import org.kie.dmn.model.v1_3.TInformationRequirement;
-import org.kie.dmn.model.v1_3.TInputClause;
-import org.kie.dmn.model.v1_3.TDMNElementReference;
-import org.kie.dmn.model.v1_3.TDecision;
-import org.kie.dmn.model.v1_3.TDecisionTable;
-import org.kie.dmn.model.v1_3.TDefinitions;
-import org.kie.dmn.model.v1_3.TInputData;
-import org.kie.dmn.model.v1_3.TLiteralExpression;
-import org.kie.dmn.model.v1_3.TOutputClause;
+import org.kie.dmn.model.v1_2.TInformationItem;
+import org.kie.dmn.model.v1_2.TInformationRequirement;
+import org.kie.dmn.model.v1_2.TInputClause;
+import org.kie.dmn.model.v1_2.KieDMNModelInstrumentedBase;
+import org.kie.dmn.model.v1_2.TDMNElementReference;
+import org.kie.dmn.model.v1_2.TDecision;
+import org.kie.dmn.model.v1_2.TDecisionTable;
+import org.kie.dmn.model.v1_2.TDefinitions;
+import org.kie.dmn.model.v1_2.TInputData;
+import org.kie.dmn.model.v1_2.TLiteralExpression;
+import org.kie.dmn.model.v1_2.TOutputClause;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,11 +191,11 @@ public class XLS2DMNParser implements DecisionTableParser {
 
     private void setDefaultNSContext(Definitions definitions) {
         Map<String, String> nsContext = definitions.getNsContext();
-        nsContext.put("feel", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_FEEL);
-        nsContext.put("dmn", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DMN);
-        nsContext.put("dmndi", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DMNDI);
-        nsContext.put("di", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DI);
-        nsContext.put("dc", org.kie.dmn.model.v1_3.KieDMNModelInstrumentedBase.URI_DC);
+        nsContext.put("feel", KieDMNModelInstrumentedBase.URI_FEEL);
+        nsContext.put("dmn", KieDMNModelInstrumentedBase.URI_DMN);
+        nsContext.put("dmndi", KieDMNModelInstrumentedBase.URI_DMNDI);
+        nsContext.put("di", KieDMNModelInstrumentedBase.URI_DI);
+        nsContext.put("dc", KieDMNModelInstrumentedBase.URI_DC);
     }
 
     private void appendInputData(Definitions definitions, Map<String, DTHeaderInfo> headerInfos) {

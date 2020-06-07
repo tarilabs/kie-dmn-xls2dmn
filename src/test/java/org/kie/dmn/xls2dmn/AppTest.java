@@ -36,6 +36,7 @@ public class AppTest {
                          .buildConfiguration()
                          .fromResources(Arrays.asList(ResourceFactory.newFileResource(tempFile)));
 
+        LOG.info("{}", System.getProperty("java.io.tmpdir"));
         DMNRuntime dmnRuntime = fromResources.getOrElseThrow(RuntimeException::new);
         return dmnRuntime;
     }

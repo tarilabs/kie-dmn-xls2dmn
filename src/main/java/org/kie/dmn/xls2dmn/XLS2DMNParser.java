@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,22 +22,35 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.drools.decisiontable.parser.DecisionTableParser;
+import org.drools.decisiontable.parser.xls.ExcelParser;
+import org.drools.template.parser.DataListener;
 import org.drools.template.parser.DecisionTableParseException;
 import org.kie.dmn.api.marshalling.DMNMarshaller;
 import org.kie.dmn.backend.marshalling.v1x.DMNMarshallerFactory;
 import org.kie.dmn.feel.codegen.feel11.CodegenStringUtil;
 import org.kie.dmn.model.api.DMNElementReference;
+import org.kie.dmn.model.api.DRGElement;
 import org.kie.dmn.model.api.Decision;
+import org.kie.dmn.model.api.DecisionTable;
 import org.kie.dmn.model.api.Definitions;
+import org.kie.dmn.model.api.Expression;
+import org.kie.dmn.model.api.HitPolicy;
 import org.kie.dmn.model.api.InformationItem;
 import org.kie.dmn.model.api.InformationRequirement;
+import org.kie.dmn.model.api.InputClause;
 import org.kie.dmn.model.api.InputData;
+import org.kie.dmn.model.api.LiteralExpression;
+import org.kie.dmn.model.api.OutputClause;
 import org.kie.dmn.model.v1_3.TInformationItem;
 import org.kie.dmn.model.v1_3.TInformationRequirement;
+import org.kie.dmn.model.v1_3.TInputClause;
 import org.kie.dmn.model.v1_3.TDMNElementReference;
 import org.kie.dmn.model.v1_3.TDecision;
+import org.kie.dmn.model.v1_3.TDecisionTable;
 import org.kie.dmn.model.v1_3.TDefinitions;
 import org.kie.dmn.model.v1_3.TInputData;
+import org.kie.dmn.model.v1_3.TLiteralExpression;
+import org.kie.dmn.model.v1_3.TOutputClause;
 
 public class XLS2DMNParser implements DecisionTableParser {
 
@@ -94,6 +108,15 @@ public class XLS2DMNParser implements DecisionTableParser {
         definitions.setExporter("kie-dmn-xls2dmn");
         appendInputData(definitions, headerInfos);
         appendDecisionDT(definitions, headerInfos);
+        final Map<String, List<DataListener>> sheetListeners = new HashMap<>();
+        for (DTHeaderInfo hi : headerInfos.values()) {
+            String sheetName = hi.getSheetName();
+            DRGElement drgElem = definitions.getDrgElement().stream().filter(e -> e.getName().equals(sheetName)).findFirst().orElseThrow(RuntimeException::new);
+            DecisionTable dt = (DecisionTable) ((Decision) drgElem).getExpression();
+            DTSheetListener listener = new DTSheetListener(dt, hi);
+            sheetListeners.put(sheetName, Arrays.asList(listener));
+        }
+        new ExcelParser(sheetListeners).parseWorkbook(workbook);
         DMNMarshaller dmnMarshaller = DMNMarshallerFactory.newDefaultMarshaller();
         String xml = dmnMarshaller.marshal(definitions);
         System.out.println(xml);
@@ -111,17 +134,40 @@ public class XLS2DMNParser implements DecisionTableParser {
             for (String ri : hi.getRequiredInput()) {
                 InformationRequirement ir = new TInformationRequirement();
                 DMNElementReference er = new TDMNElementReference();
-                er.setHref("#id_"+CodegenStringUtil.escapeIdentifier(ri));
+                er.setHref("#id_" + CodegenStringUtil.escapeIdentifier(ri));
                 ir.setRequiredInput(er);
                 decision.getInformationRequirement().add(ir);
             }
             for (String ri : hi.getRequiredDecision()) {
                 InformationRequirement ir = new TInformationRequirement();
                 DMNElementReference er = new TDMNElementReference();
-                er.setHref("#d_"+CodegenStringUtil.escapeIdentifier(ri));
+                er.setHref("#d_" + CodegenStringUtil.escapeIdentifier(ri));
                 ir.setRequiredInput(er);
                 decision.getInformationRequirement().add(ir);
             }
+            DecisionTable dt = new TDecisionTable();
+            dt.setOutputLabel(hi.getSheetName());
+            dt.setId("ddt_" + CodegenStringUtil.escapeIdentifier(hi.getSheetName()));
+            dt.setHitPolicy(HitPolicy.UNIQUE);
+            for (String ri : hi.getRequiredInput()) {
+                InputClause ic = new TInputClause();
+                ic.setLabel(ri);
+                LiteralExpression le = new TLiteralExpression();
+                le.setText(ri);
+                ic.setInputExpression(le);
+                dt.getInput().add(ic);
+            }
+            for (String rd : hi.getRequiredDecision()) {
+                InputClause ic = new TInputClause();
+                ic.setLabel(rd);
+                LiteralExpression le = new TLiteralExpression();
+                le.setText(rd);
+                ic.setInputExpression(le);
+                dt.getInput().add(ic);
+            }
+            OutputClause oc = new TOutputClause();
+            dt.getOutput().add(oc);
+            decision.setExpression(dt);
             definitions.getDrgElement().add(decision);
         }
     }

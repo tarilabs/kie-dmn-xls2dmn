@@ -133,7 +133,8 @@ public class XLS2DMNParser implements DecisionTableParser {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
-        LOG.debug("output XML:\n{}",xml);
+        LOG.debug("output XML can be displayed at trace level",xml);
+        LOG.trace("output XML:\n{}",xml);
     }
 
     private void appendDecisionDT(Definitions definitions, Map<String, DTHeaderInfo> headerInfos) {

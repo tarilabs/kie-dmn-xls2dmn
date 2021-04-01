@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
+import java.time.LocalDate;
 import java.util.Arrays;
 
 import org.junit.Test;
@@ -18,50 +19,34 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AppTest {
+public class ChineseLunarYearsTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AppTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ChineseLunarYearsTest.class);
 
-    private DMNRuntime getRuntimeLoanApprovalXslx() throws Exception {
+    private DMNRuntime getDMNRuntimeWithCLI() throws Exception {
         File tempFile = File.createTempFile("xls2dmn", ".dmn");
-        new XLS2DMNParser(tempFile).parseFile(this.getClass().getResourceAsStream("/Loan_approvals.xlsx"));
+        App.main(new String[]{"src/test/resources/ChineseLunarYears.xlsx", tempFile.toString()});
 
         Either<Exception, DMNRuntime> fromResources = DMNRuntimeBuilder.fromDefaults()
                          .buildConfiguration()
                          .fromResources(Arrays.asList(ResourceFactory.newFileResource(tempFile)));
 
         LOG.info("{}", System.getProperty("java.io.tmpdir"));
+        LOG.info("{}", tempFile);
         DMNRuntime dmnRuntime = fromResources.getOrElseThrow(RuntimeException::new);
         return dmnRuntime;
     }
 
     @Test
-    public void testLoanApprovalXslx() throws Exception {
-        final DMNRuntime dmnRuntime = getRuntimeLoanApprovalXslx();
+    public void testCLI() throws Exception {
+        final DMNRuntime dmnRuntime = getDMNRuntimeWithCLI();
         DMNModel dmnModel = dmnRuntime.getModels().get(0);
 
         DMNContext dmnContext = dmnRuntime.newContext();
-        dmnContext.set("DTI Ratio", 1);
-        dmnContext.set("PITI Ratio", 1);
-        dmnContext.set("FICO Score", 650);
+        dmnContext.set("Date", LocalDate.of(2021, 4, 1));
         DMNResult dmnResult = dmnRuntime.evaluateAll(dmnModel, dmnContext);
         LOG.debug("{}", dmnResult);
         assertThat(DMNRuntimeUtil.formatMessages(dmnResult.getMessages()), dmnResult.hasErrors(), is(false));
-        assertThat(dmnResult.getDecisionResultByName("Loan Approval").getResult(), is("Not approved"));
-    }
-    
-    @Test
-    public void testLoanApprovalXslx_Approved() throws Exception {
-        final DMNRuntime dmnRuntime = getRuntimeLoanApprovalXslx();
-        DMNModel dmnModel = dmnRuntime.getModels().get(0);
-
-        DMNContext dmnContext = dmnRuntime.newContext();
-        dmnContext.set("DTI Ratio", .1);
-        dmnContext.set("PITI Ratio", .1);
-        dmnContext.set("FICO Score", 800);
-        DMNResult dmnResult = dmnRuntime.evaluateAll(dmnModel, dmnContext);
-        LOG.debug("{}", dmnResult);
-        assertThat(DMNRuntimeUtil.formatMessages(dmnResult.getMessages()), dmnResult.hasErrors(), is(false));
-        assertThat(dmnResult.getDecisionResultByName("Loan Approval").getResult(), is("Approved"));
+        assertThat(dmnResult.getDecisionResultByName("Chinese Year").getResult(), is("Golden Ox"));
     }
 }

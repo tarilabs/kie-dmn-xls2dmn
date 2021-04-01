@@ -17,6 +17,15 @@
     <version.org.kie7>7.51.0.Final</version.org.kie7> <!-- as this project is currently done out of build, need to align with parent -->
   </properties>
 
+  <distributionManagement>
+    <!-- omitting release until release repository profile until fully clarified strategy -->
+    <snapshotRepository>
+      <id>github</id>
+      <name>GitHub Packages</name>
+      <url>https://maven.pkg.github.com/tarilabs/kie-dmn-xls2dmn</url>
+    </snapshotRepository>
+  </distributionManagement>
+
   <dependencyManagement>
     <dependencies>
       <dependency>

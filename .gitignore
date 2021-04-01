@@ -3,7 +3,10 @@
 /bin
 
 # Eclipse, Netbeans and IntelliJ files
-/.*
+.vscode
+.settings
+.classpath
+.project
 !.gitignore
 /nbproject
 /*.ipr

@@ -65,7 +65,7 @@ For example, this Excel spreadsheet formalises a `Loan Approval` as a first DMN 
 
 ![](generic_example_1.png)
 
-in this decision table, accorindly to the conventions described above:
+in this decision table, accordingly to the conventions described above:
 
 - `DTI Rating`, `PITI Rating` are dependent sub-Decision(s)
 - `FICO Score` is a dependent InputData

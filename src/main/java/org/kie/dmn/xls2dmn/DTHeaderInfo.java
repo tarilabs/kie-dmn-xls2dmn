@@ -1,6 +1,7 @@
 package org.kie.dmn.xls2dmn;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class DTHeaderInfo {
@@ -8,8 +9,8 @@ public class DTHeaderInfo {
 	private final String sheetName;
     private final List<String> original;
     private final int hIndex;
-    private final List<String> requiredInput;
-    private final List<String> requiredDecision;
+    private final Collection<String> requiredInput;
+    private final Collection<String> requiredDecision;
 
     public DTHeaderInfo(String sheetName, List<String> original, int hIndex, List<String> requiredInput, List<String> requiredDecision) {
         this.sheetName = sheetName;
@@ -37,11 +38,11 @@ public class DTHeaderInfo {
         return hIndex;
     }
 
-    public List<String> getRequiredInput() {
+    public Collection<String> getRequiredInput() {
         return requiredInput;
     }
 
-    public List<String> getRequiredDecision() {
+    public Collection<String> getRequiredDecision() {
         return requiredDecision;
     }
 

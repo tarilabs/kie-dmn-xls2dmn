@@ -7,9 +7,11 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.XMLConstants;
@@ -197,16 +199,20 @@ public class XLS2DMNParser implements DecisionTableParser {
     }
 
     private void appendInputData(Definitions definitions, Map<String, DTHeaderInfo> headerInfos) {
+        Set<String> usedRI = new LinkedHashSet<>();
         for ( DTHeaderInfo hi : headerInfos.values()) {
             for(String ri : hi.getRequiredInput()) {
-                InputData id = new TInputData();
-                id.setName(ri);
-                id.setId("id_"+CodegenStringUtil.escapeIdentifier(ri));
-                InformationItem variable = new TInformationItem();
-                variable.setName(ri);
-                variable.setId("idvar_"+CodegenStringUtil.escapeIdentifier(ri));
-                id.setVariable(variable);
-                definitions.getDrgElement().add(id);
+                if (!usedRI.contains(ri)) {
+                    InputData id = new TInputData();
+                    id.setName(ri);
+                    id.setId("id_"+CodegenStringUtil.escapeIdentifier(ri));
+                    InformationItem variable = new TInformationItem();
+                    variable.setName(ri);
+                    variable.setId("idvar_"+CodegenStringUtil.escapeIdentifier(ri));
+                    id.setVariable(variable);
+                    definitions.getDrgElement().add(id);
+                }
+                usedRI.add(ri);
             }
         }
     }

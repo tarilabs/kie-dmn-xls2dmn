@@ -7,7 +7,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "java -jar kie-dmn-xls2dmn-cli-<version>.jar",
+@Command(name = "java -jar <xl2dmn .jar file>",
         mixinStandardHelpOptions = true,
         version = Constants.VERSION,
         description = "Experimental DMN generator for Excel (.xls/.xlsx) file containing DMN decision tables.")

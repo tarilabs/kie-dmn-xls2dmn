@@ -19,13 +19,15 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import picocli.CommandLine;
+
 public class ChineseLunarYearsTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ChineseLunarYearsTest.class);
 
     private DMNRuntime getDMNRuntimeWithCLI() throws Exception {
         File tempFile = File.createTempFile("xls2dmn", ".dmn");
-        App.main(new String[]{"src/test/resources/ChineseLunarYears.xlsx", tempFile.toString()});
+        new CommandLine(new App()).execute(new String[]{"src/test/resources/ChineseLunarYears.xlsx", tempFile.toString()});
 
         Either<Exception, DMNRuntime> fromResources = DMNRuntimeBuilder.fromDefaults()
                          .buildConfiguration()

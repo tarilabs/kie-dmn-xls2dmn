@@ -5,7 +5,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 
 import java.io.File;
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -24,13 +23,15 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import picocli.CommandLine;
+
 public class CardApprovalTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(CardApprovalTest.class);
 
     private DMNRuntime getDMNRuntimeWithCLI() throws Exception {
         File tempFile = File.createTempFile("xls2dmn", ".dmn");
-        App.main(new String[]{"src/test/resources/Card_approval.xlsx", tempFile.toString()});
+        new CommandLine(new App()).execute(new String[]{"src/test/resources/Card_approval.xlsx", tempFile.toString()});
 
         List<DMNMessage> validate = DMNValidatorFactory.newValidator().validate(tempFile);
         assertThat(validate.stream().filter(m -> m.getLevel()==Level.ERROR).count(), is(0L));

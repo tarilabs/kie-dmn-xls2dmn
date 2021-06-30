@@ -18,9 +18,9 @@ import org.kie.internal.io.ResourceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AppTest {
+public class XLS2DMNParserTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AppTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(XLS2DMNParserTest.class);
 
     private DMNRuntime getRuntimeLoanApprovalXslx() throws Exception {
         File tempFile = File.createTempFile("xls2dmn", ".dmn");

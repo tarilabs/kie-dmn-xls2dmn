@@ -14,8 +14,8 @@ import picocli.CommandLine.Parameters;
 public class App implements Callable<Integer> {
     @Parameters(index = "0", paramLabel = "INPUT_FILE", description = "The input Excel (.xls/.xlsx) file containing DMN decision tables.")
     private File inputFile;
-    @Parameters(index = "1", paramLabel = "OUTPUT_FILE",  defaultValue = "", arity = "0..1", description = {"Specify filename for generated DMN model file.",
-                                                                                                            "If not specified, will generate INPUT_FILE with .dmn postfixed."})
+    @Parameters(index = "1", paramLabel = "OUTPUT_FILE", arity = "0..1", description = {"Specify filename for generated DMN model file.",
+                                                                                        "If not specified, will generate INPUT_FILE with .dmn postfixed."})
     private File outputFile;
 
     @Override

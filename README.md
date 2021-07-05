@@ -1,3 +1,6 @@
+# Archived as merged upstream at https://github.com/kiegroup/drools/tree/master/kie-dmn/kie-dmn-xls2dmn-cli#readme
+Archived as merged upstream at https://github.com/kiegroup/drools/tree/master/kie-dmn/kie-dmn-xls2dmn-cli#readme
+
 Experimental DMN generator for Excel (.xls/.xlsx) file containing DMN decision tables.
 
 NOTE being an experimental feature, the behaviour, requirements and capabilities may vary at any time.
